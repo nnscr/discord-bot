@@ -1,0 +1,12 @@
+{
+    "name": "tralala-bot",
+    "main": "src/main.ts",
+    "dependencies": {
+        "@sapphire/framework": "^5.3.4",
+        "discord.js": "^14.19.1",
+        "typescript": "^5.8.3"
+    },
+    "scripts": {
+        "start": "bun src/main.ts"
+    }
+}
