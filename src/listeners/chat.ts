@@ -48,7 +48,7 @@ export class ChatListener extends Listener {
         // In DMs: respond to anything. In guilds: only respond if mentioned.
         if (!isDM && !isMention) return
 
-        const prompt = message.content.trim()
+        const prompt = message.author.displayName + ": " + message.content.trim()
         // const prompt = isDM ? message.content.trim() : message.content.replace(/<@!?(\d+)>/, "").trim()
 
         // if (!prompt) {
