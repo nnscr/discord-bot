@@ -7,10 +7,10 @@ const MAX_MEMORY_RECORDS = 10
 // Create table if not exists
 db.prepare(
     `
-	CREATE TABLE IF NOT EXISTS memory (
-		user_id TEXT PRIMARY KEY,
-		history TEXT
-	)
+    CREATE TABLE IF NOT EXISTS memory (
+        user_id TEXT PRIMARY KEY,
+        history TEXT
+    )
 `,
 ).run()
 
@@ -38,10 +38,10 @@ export function saveMemory(userId: string, history: MemoryRecord[]) {
     const json = JSON.stringify(history.slice(-MAX_MEMORY_RECORDS))
     db.prepare(
         `
-		INSERT INTO memory (user_id, history)
-		VALUES (?, ?)
-		ON CONFLICT(user_id) DO UPDATE SET history = excluded.history
-	`,
+        INSERT INTO memory (user_id, history)
+        VALUES (?, ?)
+        ON CONFLICT(user_id) DO UPDATE SET history = excluded.history
+    `,
     ).run(userId, json)
 }
 
