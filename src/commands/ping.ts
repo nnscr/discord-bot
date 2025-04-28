@@ -20,7 +20,7 @@ export class PingCommand extends Command {
 
         const msg = await channel.send("Ping?")
 
-        const content = `Pong from JavaScript! Bot Latency ${Math.round(this.container.client.ws.ping)}ms. API Latency ${
+        const content = `Pong! Bot Latency ${Math.round(this.container.client.ws.ping)}ms. API Latency ${
             msg.createdTimestamp - message.createdTimestamp
         }ms.`
 

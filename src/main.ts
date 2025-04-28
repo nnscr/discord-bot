@@ -1,8 +1,15 @@
 import { SapphireClient } from "@sapphire/framework"
-import { GatewayIntentBits } from "discord.js"
+import { GatewayIntentBits, Partials } from "discord.js"
 
 const client = new SapphireClient({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent],
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.DirectMessages,
+    ],
+    partials: [Partials.Channel], // 👈 Needed to receive DMs (because DM channels are partials)
+
     loadMessageCommandListeners: true,
     defaultPrefix: "!",
 })

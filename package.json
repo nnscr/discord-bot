@@ -4,9 +4,13 @@
     "dependencies": {
         "@sapphire/framework": "^5.3.4",
         "discord.js": "^14.19.1",
+        "openai": "^4.96.0",
         "typescript": "^5.8.3"
     },
     "scripts": {
         "start": "bun src/main.ts"
+    },
+    "devDependencies": {
+        "bun-types": "^1.2.10"
     }
 }
