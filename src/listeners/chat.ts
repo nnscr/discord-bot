@@ -52,7 +52,7 @@ export class ChatListener extends Listener {
             ? (message.member?.displayName ?? message.author.username)
             : message.author.username
 
-        const prompt = `${displayName}: ${message.content.trim()}`
+        const prompt = `[${displayName}] sagt: ${message.content.trim()}`
         // const prompt = isDM ? message.content.trim() : message.content.replace(/<@!?(\d+)>/, "").trim()
 
         // if (!prompt) {
@@ -75,13 +75,17 @@ export class ChatListener extends Listener {
             })
 
             const reply = response.choices[0]?.message.content
-            if (reply) {
+            const fixed = reply
+                ?.replace(/(?<!<)@(\d{17,20})(?!>)/g, "<@$1>") // replace @id with actual mention
+                .replace(/<<(@\d{17,20})>>/g, "<$1>") // and remove extra angle brackets because chatgpt is dumb
+            if (reply && fixed) {
                 console.log("[ChatListener] Reply", {
                     user: message.author.username,
                     prompt,
                     reply,
+                    fixed,
                 })
-                await message.reply(reply)
+                await message.reply(fixed) // replace @id with actual mention
                 saveMemory(message.author.id, [
                     ...history,
                     { role: "user", content: prompt },
