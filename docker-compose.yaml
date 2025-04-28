@@ -2,5 +2,7 @@ services:
   discord-bot:
     build: .
     restart: unless-stopped
+    volumes:
+      - ./var:/app/var
     env_file:
       - .env

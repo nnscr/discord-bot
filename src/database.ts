@@ -1,6 +1,6 @@
 import Database from "bun:sqlite"
 
-const db = new Database("memory.db")
+const db = new Database("var/memory.db")
 
 const MAX_MEMORY_RECORDS = 10
 
