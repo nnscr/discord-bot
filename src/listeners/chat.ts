@@ -5,7 +5,6 @@ import { readFileSync } from "fs"
 import { getMemory, saveMemory } from "../database"
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-const systemPrompt = readFileSync("ai/system-prompt.md").toString()
 
 const RATE_LIMIT = 20 // max messages per minute
 const RATE_INTERVAL = 60_000 // in ms
@@ -64,6 +63,7 @@ export class ChatListener extends Listener {
         await channel.sendTyping()
 
         try {
+            const systemPrompt = readFileSync("ai/system-prompt.md").toString()
             const history = getMemory(message.author.id)
             const response = await openai.chat.completions.create({
                 model: process.env.OPENAI_MODEL ?? "gpt-3.5-turbo",
