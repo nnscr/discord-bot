@@ -51,7 +51,10 @@ export class ChatListener extends Listener {
             ? (message.member?.displayName ?? message.author.username)
             : message.author.username
 
-        const prompt = `[${displayName}] sagt: ${message.content.trim()}`
+        const prompt = `[${displayName}] sagt: ${message.content.trim()}`.replace(
+            "<@1366173735048056974>",
+            "@Drecksbot",
+        )
         // const prompt = isDM ? message.content.trim() : message.content.replace(/<@!?(\d+)>/, "").trim()
 
         // if (!prompt) {
