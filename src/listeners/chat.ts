@@ -1,8 +1,8 @@
 import { Listener } from "@sapphire/framework"
 import { Message, TextChannel } from "discord.js"
 import { OpenAI } from "openai"
-import { readFileSync } from "fs"
 import { getMemory, saveMemory } from "../database"
+import { readFileSync } from "fs"
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
@@ -16,6 +16,10 @@ type RateInfo = {
 
 const rateLimits = new Map<string, RateInfo>()
 
+export function getMessageMemoryIdentifier(message: Message): string {
+    return message.channel.isDMBased() ? message.author.id : message.channelId
+}
+
 export class ChatListener extends Listener {
     public constructor(context: Listener.LoaderContext, options: Listener.Options) {
         super(context, {
@@ -26,6 +30,14 @@ export class ChatListener extends Listener {
     }
 
     public override async run(message: Message) {
+        const channelName = message.channel instanceof TextChannel ? message.channel.name : null
+
+        // Ignore messages not in the "test" channel
+        if (channelName !== "test") {
+            console.log("[ChatListener] Ignoring message in channel", { channelName })
+            return
+        }
+
         // Ignore other bots
         if (message.author.bot) return
 
@@ -51,23 +63,17 @@ export class ChatListener extends Listener {
             ? (message.member?.displayName ?? message.author.username)
             : message.author.username
 
-        const prompt = `[${displayName}] sagt: ${message.content.trim()}`.replace(
-            "<@1366173735048056974>",
-            "@Drecksbot",
-        )
-        // const prompt = isDM ? message.content.trim() : message.content.replace(/<@!?(\d+)>/, "").trim()
-
-        // if (!prompt) {
-        //     await message.reply("You forgot to say something.")
-        //     return
-        // }
+        const userIdPart = message.author.id ? ` <@${message.author.id}>` : ""
+        const prompt = `[${displayName}]${userIdPart} sagt: ${message.content.trim()}`
 
         const channel = message.channel as TextChannel
         await channel.sendTyping()
 
+        const memoryIdentifier = getMessageMemoryIdentifier(message)
+
         try {
+            const history = getMemory(memoryIdentifier)
             const systemPrompt = readFileSync("ai/system-prompt.md").toString()
-            const history = getMemory(message.author.id)
             const response = await openai.chat.completions.create({
                 model: process.env.OPENAI_MODEL ?? "gpt-3.5-turbo",
                 messages: [
@@ -88,11 +94,11 @@ export class ChatListener extends Listener {
                     reply,
                     fixed,
                 })
-                await message.reply(fixed) // replace @id with actual mention
-                saveMemory(message.author.id, [
+                await message.reply(fixed + "[v2]") // replace @id with actual mention
+                saveMemory(memoryIdentifier, [
                     ...history,
                     { role: "user", content: prompt },
-                    { role: "assistant", content: reply },
+                    { role: "assistant", content: fixed },
                 ])
             } else await message.reply("❌ Ich kann gerade nicht denken, mein Hirn ist nicht errreichbar.")
         } catch (error) {

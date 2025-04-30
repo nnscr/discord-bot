@@ -2,7 +2,7 @@ import Database from "bun:sqlite"
 
 const db = new Database("var/memory.db")
 
-const MAX_MEMORY_RECORDS = 10
+const MAX_MEMORY_RECORDS = 20
 
 // Create table if not exists
 db.prepare(
